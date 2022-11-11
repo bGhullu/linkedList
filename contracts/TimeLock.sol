@@ -7,6 +7,9 @@ error TimeLock__TxAlreadyInQueue(bytes32 txId);
 error TimeLock__TimeNotInRange(uint blockTimestamp, uint timestamp);
 error TimeLock__TimestampNotPassed(uint blockTimestamp, uint timestamp);
 error TimeLock__TimestampExpiredError(uint blockTimestamp, uint timestamp);
+error TimeLock__NotFunctionProvided();
+error TimeLock__TransactionFailed();
+error TimeLock__TransactionNotQueued(bytes32 txId);
 
 contract TimeLock {
     event Queue(
@@ -16,6 +19,16 @@ contract TimeLock {
         string func,
         uint timestamp
     );
+
+    event Excute(
+        bytes32 indexed txId,
+        address indexed target,
+        uint value,
+        string func,
+        uint timestamp
+    );
+    event Cancel(bytes32 txId);
+
     address private owner;
     mapping(bytes32 => bool) public inQueue;
     uint256 private MIN_WAIT_TIME;
@@ -79,5 +92,27 @@ contract TimeLock {
             );
         }
         inQueue[txId] = false;
+
+        bytes memory data;
+        if (bytes(func).length > 0) {
+            data = abi.encodePacked(bytes4(keccak256(bytes(func))), data);
+        } else {
+            revert TimeLock__NotFunctionProvided();
+        }
+
+        (bool success, bytes memory response) = target.call{value: value}(data);
+        if (!success) {
+            revert TimeLock__TransactionFailed();
+        }
+        emit Excute(txId, target, value, func, timestamp);
+        return response;
+    }
+
+    function cancel(bytes32 txId) external onlyOwner {
+        if (!inQueue[txId]) {
+            revert TimeLock__TransactionNotQueued(txId);
+        }
+        inQueue[txId] = false;
+        emit Cancel(txId);
     }
 }

@@ -6,7 +6,7 @@ import "hardhat/console.sol";
 contract LinkedList {
     struct Queue {
         // address user;
-        uint256 depositAmount;
+        uint256 balance;
         uint256 prev;
         uint256 next;
     }
