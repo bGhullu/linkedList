@@ -15,7 +15,7 @@ contract LinkedList {
     uint256 head = 1;
     uint256 tail = 0;
 
-    function enqueue(uint amount) public {
+    function enqueue(uint amount) internal {
         Queue memory data;
         tail += 1;
         data.prev = tail;
@@ -27,7 +27,7 @@ contract LinkedList {
         // data.prev = tail;
     }
 
-    function dequeue() external {
+    function dequeue() internal {
         if (tail >= head) {
             // non-empty queue
             //  data = queue[head];
@@ -38,7 +38,7 @@ contract LinkedList {
         }
     }
 
-    function remove(uint256 id) external {
+    function remove(uint256 id) internal {
         Queue storage data = queue[id];
 
         if (head == id) {
@@ -59,11 +59,11 @@ contract LinkedList {
         delete queue[id];
     }
 
-    function getData(uint256 id) public view returns (Queue memory) {
+    function getData(uint256 id) internal view returns (Queue memory) {
         return queue[id];
     }
 
-    function getCurrent() public view returns (Queue memory) {
+    function getCurrent() internal view returns (Queue memory) {
         return queue[position];
     }
 }
