@@ -62,4 +62,8 @@ contract LinkedList {
     function getData(uint256 id) public view returns (Queue memory) {
         return queue[id];
     }
+
+    function getCurrent() public view returns (Queue memory) {
+        return queue[position];
+    }
 }
