@@ -58,7 +58,7 @@ contract LinkedList {
         delete queue[id];
     }
 
-    function getData(uint id) public view returns (Queue memory) {
+    function getData(uint256 id) public view returns (Queue memory) {
         return queue[id];
     }
 }
