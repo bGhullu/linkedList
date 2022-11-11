@@ -3,12 +3,12 @@ pragma solidity ^0.8.7;
 
 import "hardhat/console.sol";
 
-contract Quest {
+contract LinkedList {
     struct Queue {
         // address user;
         uint256 depositAmount;
-        uint256 next;
         uint256 prev;
+        uint256 next;
     }
     mapping(uint256 => Queue) queue;
     uint256 position;
@@ -22,7 +22,7 @@ contract Quest {
         position += 1;
         uint prev = data.prev - 1;
         uint next = tail;
-        data = Queue(amount, next, prev);
+        data = Queue(amount, prev, next);
         queue[position] = data;
         // data.prev = tail;
     }
@@ -30,11 +30,6 @@ contract Quest {
     function dequeue() public returns (Queue memory data) {
         if (tail >= head) {
             // non-empty queue
-            if (data.prev >= data.next) {
-                data = queue[data.next];
-                delete queue[data.next];
-                data.next += 1;
-            }
             data = queue[head];
             delete queue[head];
             head += 1;
@@ -43,7 +38,27 @@ contract Quest {
         }
     }
 
-    function getData(uint num) public view returns (Queue memory) {
-        return queue[num];
+    function remove(uint256 id) external {
+        Queue storage data = queue[id];
+
+        if (head == id) {
+            head = data.next;
+        }
+        if (tail == id) {
+            tail = data.prev;
+        }
+        if (data.prev != 0) {
+            queue[data.prev].next = data.next;
+        }
+        if (data.next != 0) {
+            queue[data.next].prev = data.prev;
+        }
+        queue[id].next = 0;
+        queue[id].prev = 0;
+        delete queue[id];
+    }
+
+    function getData(uint id) public view returns (Queue memory) {
+        return queue[id];
     }
 }
