@@ -27,10 +27,10 @@ contract LinkedList {
         // data.prev = tail;
     }
 
-    function dequeue() public returns (Queue memory data) {
+    function dequeue() external {
         if (tail >= head) {
             // non-empty queue
-            data = queue[head];
+            //  data = queue[head];
             delete queue[head];
             head += 1;
         } else {
@@ -42,7 +42,8 @@ contract LinkedList {
         Queue storage data = queue[id];
 
         if (head == id) {
-            head = data.next;
+            head = data.next + 1;
+            queue[head].prev = 0;
         }
         if (tail == id) {
             tail = data.prev;
